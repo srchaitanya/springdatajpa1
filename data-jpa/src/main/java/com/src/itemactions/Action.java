@@ -1,24 +1,27 @@
 package com.src.itemactions;
 
-import java.sql.Date;
 import java.sql.Timestamp;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
 @Entity
 public class Action {
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
+	@Column(name = "action_id")
 	private Long id;
 	
 	private String actionName;
 	private Timestamp insertDateTime;
 	
 	@ManyToOne
+	@JoinColumn(name="item_id")
 	private Item item;
 	
 	protected Action() {}
@@ -42,7 +45,7 @@ public class Action {
 
 	@Override
 	public String toString() {
-		return "Action [id=" + id + ", actionName=" + actionName + ", insertDateTime=" + insertDateTime + ", item=" + item
+		return "Action [id=" + id + ", actionName=" + actionName + ", insertDateTime=" + insertDateTime + ", item=" + item.getId()
 				+ "]";
 	}
 

@@ -3,6 +3,7 @@ package com.src.itemactions;
 import java.util.List;
 
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -14,12 +15,12 @@ import javax.persistence.OrderBy;
 public class Item {
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
-	private Long Id;
+	@Column(name = "item_id")
+	private Long id;
 	
 	private String itemName;
 	
-	@OneToMany(cascade = CascadeType.ALL)
-	@OrderBy("insertDateTime DESC")
+	@OneToMany(cascade = CascadeType.ALL, mappedBy = "item")
 	private List<Action> actions; 
 	
 	
@@ -32,9 +33,7 @@ public class Item {
 		this.actions = actions;
 	}
 	
-	public Long getId() {
-		return Id;
-	}
+	
 
 	public String getItemName() {
 		return itemName;
@@ -47,7 +46,12 @@ public class Item {
 
 	@Override
 	public String toString() {
-		return "Item [Id=" + Id + ", itemName=" + itemName + ", actions=" + actions + "]";
+		return "Item [Id=" + id + ", itemName=" + itemName + ", actions=" + actions + "]";
+	}
+
+
+	public Long getId() {
+		return id;
 	}
 
 

@@ -13,6 +13,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.core.Ordered;
 
 import com.src.itemactions.Action;
+import com.src.itemactions.ActionRepository;
 import com.src.itemactions.Item;
 import com.src.itemactions.ItemCustomRepoImpl;
 import com.src.itemactions.ItemRepository;
@@ -63,12 +64,10 @@ public class DataJpaApplication {
 				log.info(bauer.toString());
 			});			
 		}
-
 		@Override
 		public int getOrder() {
 			return 22;
 		}
-		
 	}
 	
 	
@@ -76,16 +75,18 @@ public class DataJpaApplication {
 		
 		private ItemRepository itemRepository;
 		private ItemCustomRepoImpl itemRepositoryImpl;
+		private ActionRepository actionRepository;
 
-		public ItemRepoDataSetup(ItemRepository itemRepository, ItemCustomRepoImpl itemRepositoryImpl) {
+		public ItemRepoDataSetup(ItemRepository itemRepository, ItemCustomRepoImpl itemRepositoryImpl, ActionRepository actionRepositoryImpl) {
 			super();
 			this.itemRepository = itemRepository;
 			this.itemRepositoryImpl=itemRepositoryImpl;
+			this.actionRepository=actionRepositoryImpl;
 		}
 
 		void sleep(){
 			try {
-				Thread.sleep(500);
+				Thread.sleep(100);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
@@ -100,27 +101,48 @@ public class DataJpaApplication {
 			Action a3= new Action("action-3", Timestamp.valueOf(LocalDateTime.now()));
 			sleep();
 			Item i1 = new Item("item1",Arrays.asList(a1,a2,a3));
-			sleep();
+			
+			itemRepository.save(i1);
+			a1.setItem(i1);
+			a2.setItem(i1);
+			a3.setItem(i1);
+			this.actionRepository.save(a1);
+			this.actionRepository.save(a2);
+			this.actionRepository.save(a3);
+
 			Action a4= new Action("action-4", Timestamp.valueOf(LocalDateTime.now()));
 			sleep();
 			Action a5= new Action("action-5", Timestamp.valueOf(LocalDateTime.now()));
 			sleep();
 			Action a6= new Action("action-6", Timestamp.valueOf(LocalDateTime.now()));
-		
-			Item i2 = new Item("item2",Arrays.asList(a4,a5,a6));
+			Item i2 = new Item("item2",Arrays.asList(a4,a5,a6));			
+
+
+			a4.setItem(i2);
+			a5.setItem(i2);
+			a6.setItem(i2);
+			this.itemRepositoryImpl.saveItemAndActions(i2, Arrays.asList(a4,a5,a6));
+			
 			System.out.println(i1);
 			System.out.println(i2);
-			
-			itemRepository.save(i1);
-			itemRepository.save(i2);
-			System.out.println(i1);
-			System.out.println(i2);
-			System.out.println("**********************************************");
-			System.out.println("**********************************************");
-			
+
+			System.out.println("********************************************************************************************");
+			System.out.println("********************************************************************************************");
 			Action a = itemRepositoryImpl.getLastAction(i1.getId());
 			System.out.println(a);
-			
+			System.out.println("********************************************************************************************");
+			System.out.println("********************************************************************************************");
+			this.itemRepositoryImpl.printItemById(i1.getId());
+			System.out.println("********************************************************************************************");
+			System.out.println("********************************************************************************************");
+			this.itemRepositoryImpl.printActionByItemId(i1.getId());
+			System.out.println("********************************************************************************************");
+			System.out.println("********************************************************************************************");
+			System.out.println("********************************************************************************************");
+			System.out.println("********************************************************************************************");
+			this.itemRepositoryImpl.printActionByItemId(i2.getId());
+			System.out.println("********************************************************************************************");
+			System.out.println("********************************************************************************************");
 		}
 
 		@Override
@@ -135,8 +157,8 @@ public class DataJpaApplication {
 	}
 	
 	@Bean
-	public CommandLineRunner itemClr(final ItemRepository itemRepository, ItemCustomRepoImpl itemCustomRepoImpl) {
-		return new ItemRepoDataSetup(itemRepository,itemCustomRepoImpl);
+	public CommandLineRunner itemClr(final ItemRepository itemRepository, ItemCustomRepoImpl itemCustomRepoImpl, ActionRepository actionRepositoryImpl) {
+		return new ItemRepoDataSetup(itemRepository,itemCustomRepoImpl,actionRepositoryImpl);
 	}
 
 }
